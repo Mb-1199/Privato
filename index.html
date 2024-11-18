@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sei un ficcanaso!</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1E3C72, #2A5298, #89CFF0);
+            background-size: 200% 200%;
+            animation: gradientBG 10s ease infinite;
+            text-align: center;
+            padding: 10px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .main-image, .secondary-image {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+            margin: 10px auto;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .button {
+            font-size: 1.2em;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            width: 45%;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .like-button { background-color: #4CAF50; }
+        .dislike-button { background-color: #f44336; }
+
+        .counter {
+            font-size: 1.2em;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .calendar-style {
+            font-size: 1.8em;
+            background-color: #fff;
+            color: #000;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .instagram-button {
+            font-size: 1.2em;
+            padding: 10px;
+            background-color: #E4405F;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Musica di sottofondo -->
+    <audio id="background-audio" autoplay loop>
+        <source src="audio-file.mp3" type="audio/mpeg">
+        Il tuo browser non supporta l'audio.
+    </audio>
+
+    <!-- Immagine principale -->
+    <img class="main-image" src="1.jpg" alt="Immagine principale">
+
+    <!-- Titolo -->
+    <h1>Sei un ficcanaso!</h1>
+    <div class="subtitle">Numero di ficcanasi fino ad ora:</div>
+    <div id="visitor-number" class="calendar-style">0</div>
+
+    <!-- Immagine secondaria -->
+    <img class="secondary-image" src="2.jpg" alt="Immagine secondaria">
+
+    <!-- Pulsanti -->
+    <div class="buttons">
+        <button class="button dislike-button" onclick="vote('dislike')">👎 Non mi piace</button>
+        <button class="button like-button" onclick="vote('like')">👍 Mi piace</button>
+    </div>
+
+    <!-- Contatori -->
+    <div id="like-count" class="counter">Mi piace: 0</div>
+    <div id="dislike-count" class="counter">Non mi piace: 0</div>
+
+    <!-- Tasto Instagram -->
+    <a class="instagram-button" href="https://www.instagram.com/direct/t/mattibernaa/" target="_blank">
+        Mandami a cagare
+    </a>
+
+    <script>
+        // Rimuove il mute all'avvio
+        window.onload = () => {
+            const audio = document.getElementById('background-audio');
+            audio.muted = false;
+
+            // Gestione contatori visitatori
+            let visitorCount = parseInt(localStorage.getItem('visitorCount')) || 0;
+            visitorCount++;
+            localStorage.setItem('visitorCount', visitorCount);
+            document.getElementById('visitor-number').innerText = visitorCount;
+            document.getElementById('visitor-number').style.display = 'block';
+        };
+
+        // Gestione contatori Mi Piace e Non Mi Piace
+        let likeCount = parseInt(localStorage.getItem('likeCount')) || 0;
+        let dislikeCount = parseInt(localStorage.getItem('dislikeCount')) || 0;
+        let hasVoted = localStorage.getItem('hasVoted') === 'true';
+
+        if (hasVoted) {
+            updateCounters();
+        }
+
+        function vote(type) {
+            if (hasVoted) return;
+
+            if (type === 'like') {
+                likeCount++;
+                localStorage.setItem('likeCount', likeCount);
+            } else if (type === 'dislike') {
+                dislikeCount++;
+                localStorage.setItem('dislikeCount', dislikeCount);
+            }
+
+            localStorage.setItem('hasVoted', 'true');
+            updateCounters();
+        }
+
+        function updateCounters() {
+            document.getElementById('like-count').innerText = `Mi piace: ${likeCount}`;
+            document.getElementById('dislike-count').innerText = `Non mi piace: ${dislikeCount}`;
+            document.getElementById('like-count').style.display = 'block';
+            document.getElementById('dislike-count').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
