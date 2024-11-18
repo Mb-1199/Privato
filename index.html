@@ -32,14 +32,12 @@
             font-size: 1.5em;
             margin-top: 5px;
             font-weight: bold;
-            display: none;
         }
 
         .counter {
             font-size: 1.2em;
             font-weight: bold;
             margin: 10px 0;
-            display: none;
         }
 
         .main-image, .secondary-image {
@@ -125,17 +123,15 @@
         let dislikeCount = parseInt(localStorage.getItem('dislikeCount')) || 0;
         let hasVoted = localStorage.getItem('hasVoted') === 'true';
 
-        // Aggiorna i contatori all'apertura della pagina
+        // Aggiorna i contatori
         function updateCounters() {
             visitorCountEl.innerText = `Visualizzazioni: ${visitorCount}`;
             likeCountEl.innerText = `Mi piace: ${likeCount}`;
             dislikeCountEl.innerText = `Non mi piace: ${dislikeCount}`;
-            if (hasVoted || visitorCount > 0) {
-                subtitleEl.style.display = 'block';
-                visitorCountEl.style.display = 'block';
-                likeCountEl.style.display = 'block';
-                dislikeCountEl.style.display = 'block';
-            }
+            subtitleEl.style.display = 'block';
+            visitorCountEl.style.display = 'block';
+            likeCountEl.style.display = 'block';
+            dislikeCountEl.style.display = 'block';
         }
 
         // Incrementa il contatore delle visualizzazioni
@@ -147,7 +143,7 @@
         // Abilita l'audio di sottofondo
         function enableAudio() {
             backgroundAudio.play();
-            document.querySelector('.audio-overlay').style.display = 'none';
+            document.querySelector('.audio-overlay').style.display = 'none'; // Rimuove l'overlay invisibile
         }
 
         // Gestisce il voto
