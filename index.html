@@ -108,11 +108,27 @@
         .instagram-button:hover {
             background-color: #c63754;
         }
+
+        #audio-button {
+            font-size: 1.2em;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            margin-top: 20px;
+            cursor: pointer;
+            display: none;
+        }
+
+        #audio-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <!-- Musica di sottofondo -->
-    <audio id="background-audio" autoplay loop>
+    <audio id="background-audio" loop>
         <source src="audio-file.mp3" type="audio/mpeg">
         Il tuo browser non supporta l'audio.
     </audio>
@@ -143,15 +159,18 @@
         Mandami a cagare
     </a>
 
+    <!-- Pulsante per abilitare l'audio -->
+    <button id="audio-button" onclick="enableAudio()">Abilita audio</button>
+
     <script>
-        // Rimuove il mute all'avvio
+        // Controllo del browser e attivazione manuale
         window.onload = () => {
             const audio = document.getElementById('background-audio');
-            audio.volume = 1.0; // Imposta il volume massimo
-            audio.muted = false; // Rimuove il muto
-            audio.play().catch((error) => {
-                console.error("Autoplay bloccato dal browser:", error);
-                alert("La riproduzione automatica è stata bloccata dal browser. Abilita l'audio manualmente.");
+
+            // Tenta di avviare l'audio automaticamente
+            audio.play().catch(() => {
+                // Mostra il pulsante per abilitare l'audio
+                document.getElementById('audio-button').style.display = 'block';
             });
 
             // Gestione contatori visitatori
@@ -160,6 +179,13 @@
             localStorage.setItem('visitorCount', visitorCount);
             document.getElementById('visitor-number').innerText = visitorCount;
         };
+
+        // Funzione per abilitare manualmente l'audio
+        function enableAudio() {
+            const audio = document.getElementById('background-audio');
+            audio.play();
+            document.getElementById('audio-button').style.display = 'none';
+        }
 
         // Gestione contatori Mi Piace e Non Mi Piace
         let likeCount = parseInt(localStorage.getItem('likeCount')) || 0;
