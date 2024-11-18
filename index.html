@@ -62,54 +62,7 @@
         .like-button { background-color: #4CAF50; }
         .dislike-button { background-color: #f44336; }
 
-        .counter {
-            font-size: 1.5em;
-            font-weight: bold;
-            padding: 10px;
-            margin: 10px auto;
-            width: 60%;
-            max-width: 300px;
-            border-radius: 10px;
-            background-color: #fff;
-            color: #000;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            transform: scale(0.9);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-
-        .counter.show {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .calendar-style {
-            font-size: 1.8em;
-            background-color: #fff;
-            color: #000;
-            border-radius: 10px;
-            padding: 10px;
-            margin-top: 10px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-            display: none;
-        }
-
-        .instagram-button {
-            font-size: 1.2em;
-            padding: 10px;
-            background-color: #E4405F;
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
-            margin-top: 20px;
-            display: inline-block;
-        }
-
-        .instagram-button:hover {
-            background-color: #c63754;
-        }
-
-        #audio-button {
+        .audio-button {
             font-size: 1.2em;
             padding: 10px;
             background-color: #007BFF;
@@ -118,10 +71,9 @@
             border-radius: 10px;
             margin-top: 20px;
             cursor: pointer;
-            display: none;
         }
 
-        #audio-button:hover {
+        .audio-button:hover {
             background-color: #0056b3;
         }
     </style>
@@ -130,7 +82,22 @@
     <!-- Musica di sottofondo -->
     <audio id="background-audio" loop>
         <source src="audio-file.mp3" type="audio/mpeg">
+        <source src="audio-file.ogg" type="audio/ogg">
         Il tuo browser non supporta l'audio.
+    </audio>
+
+    <!-- Effetti sonori -->
+    <audio id="like-sound">
+        <source src="like-sound.mp3" type="audio/mpeg">
+        <source src="like-sound.ogg" type="audio/ogg">
+    </audio>
+    <audio id="dislike-sound">
+        <source src="dislike-sound.mp3" type="audio/mpeg">
+        <source src="dislike-sound.ogg" type="audio/ogg">
+    </audio>
+    <audio id="instagram-sound">
+        <source src="instagram-sound.mp3" type="audio/mpeg">
+        <source src="instagram-sound.ogg" type="audio/ogg">
     </audio>
 
     <!-- Immagine principale -->
@@ -138,56 +105,44 @@
 
     <!-- Titolo -->
     <h1>Sei un ficcanaso!</h1>
-    <div class="subtitle" id="subtitle" style="display: none;">Numero di ficcanasi fino ad ora:</div>
-    <div id="visitor-number" class="calendar-style">0</div>
 
     <!-- Immagine secondaria -->
     <img class="secondary-image" src="2.jpg" alt="Immagine secondaria">
 
     <!-- Pulsanti -->
     <div class="buttons">
-        <button class="button dislike-button" onclick="vote('dislike')">👎 Non mi piace</button>
-        <button class="button like-button" onclick="vote('like')">👍 Mi piace</button>
+        <button class="button like-button" onclick="playSound('like'); vote('like')">👍 Mi piace</button>
+        <button class="button dislike-button" onclick="playSound('dislike'); vote('dislike')">👎 Non mi piace</button>
     </div>
 
-    <!-- Contatori -->
-    <div id="like-count" class="counter">Mi piace: 0</div>
-    <div id="dislike-count" class="counter">Non mi piace: 0</div>
+    <!-- Pulsante audio manuale -->
+    <button class="audio-button" onclick="playBackgroundAudio()">🎵 Riproduci musica</button>
 
     <!-- Tasto Instagram -->
-    <a class="instagram-button" href="https://www.instagram.com/direct/new/?username=mattibernaa" target="_blank">
+    <a class="audio-button" onclick="playSound('instagram');" href="https://www.instagram.com/direct/new/?username=mattibernaa" target="_blank">
         Mandami a cagare
     </a>
 
-    <!-- Pulsante per abilitare l'audio -->
-    <button id="audio-button" onclick="enableAudio()">Abilita audio</button>
-
     <script>
-        // Controllo del browser e attivazione manuale
-        window.onload = () => {
-            const audio = document.getElementById('background-audio');
-
-            // Tenta di avviare l'audio automaticamente
-            audio.play().catch(() => {
-                // Mostra il pulsante per abilitare l'audio
-                document.getElementById('audio-button').style.display = 'block';
-            });
-
-            // Gestione contatori visitatori
-            let visitorCount = parseInt(localStorage.getItem('visitorCount')) || 0;
-            visitorCount++;
-            localStorage.setItem('visitorCount', visitorCount);
-            document.getElementById('visitor-number').innerText = visitorCount;
-        };
-
-        // Funzione per abilitare manualmente l'audio
-        function enableAudio() {
-            const audio = document.getElementById('background-audio');
-            audio.play();
-            document.getElementById('audio-button').style.display = 'none';
+        // Riproduzione musica di sottofondo
+        const backgroundAudio = document.getElementById('background-audio');
+        function playBackgroundAudio() {
+            backgroundAudio.play();
         }
 
-        // Gestione contatori Mi Piace e Non Mi Piace
+        // Riproduzione degli effetti sonori
+        function playSound(type) {
+            const sounds = {
+                like: document.getElementById('like-sound'),
+                dislike: document.getElementById('dislike-sound'),
+                instagram: document.getElementById('instagram-sound'),
+            };
+            if (sounds[type]) {
+                sounds[type].play();
+            }
+        }
+
+        // Gestione voti
         let likeCount = parseInt(localStorage.getItem('likeCount')) || 0;
         let dislikeCount = parseInt(localStorage.getItem('dislikeCount')) || 0;
         let hasVoted = localStorage.getItem('hasVoted') === 'true';
@@ -211,16 +166,7 @@
         }
 
         function updateCounters() {
-            document.getElementById('like-count').innerText = `Mi piace: ${likeCount}`;
-            document.getElementById('dislike-count').innerText = `Non mi piace: ${dislikeCount}`;
-
-            // Mostra i contatori con animazione
-            document.getElementById('like-count').classList.add('show');
-            document.getElementById('dislike-count').classList.add('show');
-
-            // Mostra il sottotitolo e le visualizzazioni
-            document.getElementById('subtitle').style.display = 'block';
-            document.getElementById('visitor-number').style.display = 'block';
+            console.log(`Mi piace: ${likeCount}, Non mi piace: ${dislikeCount}`);
         }
     </script>
 </body>
