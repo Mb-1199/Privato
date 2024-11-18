@@ -13,6 +13,7 @@
             animation: gradientBG 10s ease infinite;
             text-align: center;
             padding: 10px;
+            position: relative;
         }
 
         @keyframes gradientBG {
@@ -31,6 +32,14 @@
             font-size: 1.5em;
             margin-top: 5px;
             font-weight: bold;
+            display: none;
+        }
+
+        .counter {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0;
+            display: none;
         }
 
         .main-image, .secondary-image {
@@ -62,19 +71,15 @@
         .like-button { background-color: #4CAF50; }
         .dislike-button { background-color: #f44336; }
 
-        .audio-button {
-            font-size: 1.2em;
-            padding: 10px;
-            background-color: #007BFF;
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
-            margin-top: 20px;
+        .audio-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 10;
             cursor: pointer;
-        }
-
-        .audio-button:hover {
-            background-color: #0056b3;
         }
     </style>
 </head>
@@ -86,67 +91,66 @@
         Il tuo browser non supporta l'audio.
     </audio>
 
-    <!-- Effetti sonori -->
-    <audio id="like-sound">
-        <source src="like-sound.mp3" type="audio/mpeg">
-        <source src="like-sound.ogg" type="audio/ogg">
-    </audio>
-    <audio id="dislike-sound">
-        <source src="dislike-sound.mp3" type="audio/mpeg">
-        <source src="dislike-sound.ogg" type="audio/ogg">
-    </audio>
-    <audio id="instagram-sound">
-        <source src="instagram-sound.mp3" type="audio/mpeg">
-        <source src="instagram-sound.ogg" type="audio/ogg">
-    </audio>
-
     <!-- Immagine principale -->
     <img class="main-image" src="1.jpg" alt="Immagine principale">
 
     <!-- Titolo -->
     <h1>Sei un ficcanaso!</h1>
+    <div class="subtitle" id="subtitle">Numero di ficcanasi fino ad ora:</div>
 
-    <!-- Immagine secondaria -->
-    <img class="secondary-image" src="2.jpg" alt="Immagine secondaria">
+    <!-- Contatori -->
+    <div id="visitor-count" class="counter">Visualizzazioni: 0</div>
+    <div id="like-count" class="counter">Mi piace: 0</div>
+    <div id="dislike-count" class="counter">Non mi piace: 0</div>
 
     <!-- Pulsanti -->
     <div class="buttons">
-        <button class="button like-button" onclick="playSound('like'); vote('like')">👍 Mi piace</button>
-        <button class="button dislike-button" onclick="playSound('dislike'); vote('dislike')">👎 Non mi piace</button>
+        <button class="button like-button" onclick="vote('like')">👍 Mi piace</button>
+        <button class="button dislike-button" onclick="vote('dislike')">👎 Non mi piace</button>
     </div>
 
-    <!-- Pulsante audio manuale -->
-    <button class="audio-button" onclick="playBackgroundAudio()">🎵 Riproduci musica</button>
-
-    <!-- Tasto Instagram -->
-    <a class="audio-button" onclick="playSound('instagram');" href="https://www.instagram.com/direct/new/?username=mattibernaa" target="_blank">
-        Mandami a cagare
-    </a>
+    <!-- Overlay invisibile per abilitare audio -->
+    <div class="audio-overlay" onclick="enableAudio()"></div>
 
     <script>
-        // Riproduzione musica di sottofondo
+        const visitorCountEl = document.getElementById('visitor-count');
+        const likeCountEl = document.getElementById('like-count');
+        const dislikeCountEl = document.getElementById('dislike-count');
+        const subtitleEl = document.getElementById('subtitle');
         const backgroundAudio = document.getElementById('background-audio');
-        function playBackgroundAudio() {
-            backgroundAudio.play();
-        }
 
-        // Riproduzione degli effetti sonori
-        function playSound(type) {
-            const sounds = {
-                like: document.getElementById('like-sound'),
-                dislike: document.getElementById('dislike-sound'),
-                instagram: document.getElementById('instagram-sound'),
-            };
-            if (sounds[type]) {
-                sounds[type].play();
-            }
-        }
-
-        // Gestione voti
+        // Recupera i dati dal localStorage
+        let visitorCount = parseInt(localStorage.getItem('visitorCount')) || 0;
         let likeCount = parseInt(localStorage.getItem('likeCount')) || 0;
         let dislikeCount = parseInt(localStorage.getItem('dislikeCount')) || 0;
         let hasVoted = localStorage.getItem('hasVoted') === 'true';
 
+        // Aggiorna i contatori all'apertura della pagina
+        function updateCounters() {
+            visitorCountEl.innerText = `Visualizzazioni: ${visitorCount}`;
+            likeCountEl.innerText = `Mi piace: ${likeCount}`;
+            dislikeCountEl.innerText = `Non mi piace: ${dislikeCount}`;
+            if (hasVoted || visitorCount > 0) {
+                subtitleEl.style.display = 'block';
+                visitorCountEl.style.display = 'block';
+                likeCountEl.style.display = 'block';
+                dislikeCountEl.style.display = 'block';
+            }
+        }
+
+        // Incrementa il contatore delle visualizzazioni
+        function incrementVisitorCount() {
+            visitorCount++;
+            localStorage.setItem('visitorCount', visitorCount);
+        }
+
+        // Abilita l'audio di sottofondo
+        function enableAudio() {
+            backgroundAudio.play();
+            document.querySelector('.audio-overlay').style.display = 'none';
+        }
+
+        // Gestisce il voto
         function vote(type) {
             if (hasVoted) {
                 alert("Hai già votato! Puoi scegliere solo una volta.");
@@ -162,12 +166,15 @@
             }
 
             localStorage.setItem('hasVoted', 'true');
+            hasVoted = true;
             updateCounters();
         }
 
-        function updateCounters() {
-            console.log(`Mi piace: ${likeCount}, Non mi piace: ${dislikeCount}`);
-        }
+        // Esegui all'apertura della pagina
+        window.onload = () => {
+            incrementVisitorCount();
+            updateCounters();
+        };
     </script>
 </body>
 </html>
