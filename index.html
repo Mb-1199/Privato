@@ -63,9 +63,24 @@
         .dislike-button { background-color: #f44336; }
 
         .counter {
-            font-size: 1.2em;
-            margin: 10px 0;
-            display: none;
+            font-size: 1.5em;
+            font-weight: bold;
+            padding: 10px;
+            margin: 10px auto;
+            width: 60%;
+            max-width: 300px;
+            border-radius: 10px;
+            background-color: #fff;
+            color: #000;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .counter.show {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .calendar-style {
@@ -76,6 +91,7 @@
             padding: 10px;
             margin-top: 10px;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+            display: none;
         }
 
         .instagram-button {
@@ -87,6 +103,10 @@
             border-radius: 10px;
             margin-top: 20px;
             display: inline-block;
+        }
+
+        .instagram-button:hover {
+            background-color: #c63754;
         }
     </style>
 </head>
@@ -102,7 +122,7 @@
 
     <!-- Titolo -->
     <h1>Sei un ficcanaso!</h1>
-    <div class="subtitle">Numero di ficcanasi fino ad ora:</div>
+    <div class="subtitle" id="subtitle" style="display: none;">Numero di ficcanasi fino ad ora:</div>
     <div id="visitor-number" class="calendar-style">0</div>
 
     <!-- Immagine secondaria -->
@@ -119,7 +139,7 @@
     <div id="dislike-count" class="counter">Non mi piace: 0</div>
 
     <!-- Tasto Instagram -->
-    <a class="instagram-button" href="https://www.instagram.com/direct/t/mattibernaa/" target="_blank">
+    <a class="instagram-button" href="https://www.instagram.com/direct/new/?username=mattibernaa" target="_blank">
         Mandami a cagare
     </a>
 
@@ -127,14 +147,18 @@
         // Rimuove il mute all'avvio
         window.onload = () => {
             const audio = document.getElementById('background-audio');
-            audio.muted = false;
+            audio.volume = 1.0; // Imposta il volume massimo
+            audio.muted = false; // Rimuove il muto
+            audio.play().catch((error) => {
+                console.error("Autoplay bloccato dal browser:", error);
+                alert("La riproduzione automatica è stata bloccata dal browser. Abilita l'audio manualmente.");
+            });
 
             // Gestione contatori visitatori
             let visitorCount = parseInt(localStorage.getItem('visitorCount')) || 0;
             visitorCount++;
             localStorage.setItem('visitorCount', visitorCount);
             document.getElementById('visitor-number').innerText = visitorCount;
-            document.getElementById('visitor-number').style.display = 'block';
         };
 
         // Gestione contatori Mi Piace e Non Mi Piace
@@ -142,12 +166,11 @@
         let dislikeCount = parseInt(localStorage.getItem('dislikeCount')) || 0;
         let hasVoted = localStorage.getItem('hasVoted') === 'true';
 
-        if (hasVoted) {
-            updateCounters();
-        }
-
         function vote(type) {
-            if (hasVoted) return;
+            if (hasVoted) {
+                alert("Hai già votato! Puoi scegliere solo una volta.");
+                return;
+            }
 
             if (type === 'like') {
                 likeCount++;
@@ -164,8 +187,14 @@
         function updateCounters() {
             document.getElementById('like-count').innerText = `Mi piace: ${likeCount}`;
             document.getElementById('dislike-count').innerText = `Non mi piace: ${dislikeCount}`;
-            document.getElementById('like-count').style.display = 'block';
-            document.getElementById('dislike-count').style.display = 'block';
+
+            // Mostra i contatori con animazione
+            document.getElementById('like-count').classList.add('show');
+            document.getElementById('dislike-count').classList.add('show');
+
+            // Mostra il sottotitolo e le visualizzazioni
+            document.getElementById('subtitle').style.display = 'block';
+            document.getElementById('visitor-number').style.display = 'block';
         }
     </script>
 </body>
