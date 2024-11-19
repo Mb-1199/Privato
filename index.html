@@ -35,6 +35,10 @@
             margin: 20px 0;
         }
 
+        .hidden {
+            display: none;
+        }
+
         .buttons {
             display: flex;
             flex-direction: column;
@@ -57,9 +61,6 @@
 
         .like-button { background-color: #4CAF50; }
         .dislike-button { background-color: #f44336; }
-        .hidden {
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -75,7 +76,7 @@
 
     <script>
         // Namespace e chiavi per CountAPI
-        const namespace = "ficcanaso"; 
+        const namespace = "ficcanaso";
         const visitKey = "visitCount";
         const likeKey = "likeCount";
         const dislikeKey = "dislikeCount";
@@ -125,4 +126,3 @@
     </script>
 </body>
 </html>
-
