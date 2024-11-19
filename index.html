@@ -39,6 +39,24 @@
             display: none;
         }
 
+        .message {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 10px rgba(255, 215, 0, 0.7);
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .main-image, .secondary-image {
+            width: 90%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+            margin: 10px auto;
+        }
+
         .buttons {
             display: flex;
             flex-direction: column;
@@ -64,11 +82,32 @@
     </style>
 </head>
 <body>
+    <!-- Musica di sottofondo -->
+    <audio id="background-audio" loop>
+        <source src="audio-file.mp3" type="audio/mpeg">
+        <source src="audio-file.ogg" type="audio/ogg">
+        Il tuo browser non supporta l'audio.
+    </audio>
+
+    <!-- Overlay invisibile per abilitare l'audio -->
+    <div id="audio-overlay" onclick="enableAudio()" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; z-index: 10;"></div>
+
+    <!-- Immagine principale -->
+    <img class="main-image" src="1.jpg" alt="Immagine principale">
+
+    <!-- Titolo -->
     <h1>Sei un ficcanaso!</h1>
+    <div class="message">Ti ho visto! 👀</div>
+
+    <!-- Contatori -->
     <div id="visitor-count" class="counter">Visualizzazioni: 0</div>
     <div id="like-count" class="counter hidden">Mi Piace: 0</div>
     <div id="dislike-count" class="counter hidden">Non Mi Piace: 0</div>
 
+    <!-- Immagine secondaria -->
+    <img class="secondary-image" src="2.jpg" alt="Immagine secondaria">
+
+    <!-- Pulsanti -->
     <div class="buttons">
         <button class="button like-button" onclick="vote('like')">👍 Mi Piace</button>
         <button class="button dislike-button" onclick="vote('dislike')">👎 Non Mi Piace</button>
@@ -76,7 +115,7 @@
 
     <script>
         // Namespace e chiavi per CountAPI
-        const namespace = "ficcanaso";
+        const namespace = "ficcanaso"; 
         const visitKey = "visitCount";
         const likeKey = "likeCount";
         const dislikeKey = "dislikeCount";
@@ -122,6 +161,13 @@
             // Mostra entrambi i contatori
             likeCountEl.classList.remove('hidden');
             dislikeCountEl.classList.remove('hidden');
+        }
+
+        // Abilita l'audio di sottofondo
+        function enableAudio() {
+            const audio = document.getElementById('background-audio');
+            audio.play();
+            document.getElementById('audio-overlay').style.display = 'none';
         }
     </script>
 </body>
