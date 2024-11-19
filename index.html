@@ -106,7 +106,7 @@
     <div class="message">Ti ho visto! 👀</div>
 
     <!-- Contatori -->
-    <div id="visitor-count" class="counter">Numero di ficcanasi fino ad ora: 0</div>
+    <div id="visitor-count" class="counter">Numero di ficcanasi: 0</div>
     <div id="like-count" class="counter hidden">Mi Piace: 0</div>
     <div id="dislike-count" class="counter hidden">Non Mi Piace: 0</div>
 
@@ -117,6 +117,7 @@
     <div class="buttons">
         <button class="button like-button" onclick="vote('like')">👍 Mi Piace</button>
         <button class="button dislike-button" onclick="vote('dislike')">👎 Non Mi Piace</button>
+        <a class="button instagram-button" href="https://www.instagram.com/direct/new/?username=mattibernaa" target="_blank">Mandami a cagare</a>
     </div>
 
     <script>
@@ -138,7 +139,7 @@
         fetch(`https://api.countapi.xyz/hit/${namespace}/${visitKey}`)
             .then(response => response.json())
             .then(data => {
-                visitorCountEl.innerText = `Numero di ficcanasi fino ad ora: ${data.value}`;
+                visitorCountEl.innerText = `Numero di ficcanasi: ${data.value}`;
             })
             .catch(error => console.error('Errore nel contatore delle visualizzazioni:', error));
 
