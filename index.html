@@ -24,7 +24,7 @@
         }
 
         h1 {
-            font-size: 1.8em; /* Dimensione ottimizzata per smartphone */
+            font-size: 1.8em;
             margin: 10px 0;
             text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
         }
@@ -42,7 +42,7 @@
         }
 
         .main-image, .secondary-image {
-            width: 90%; /* Adattabile a schermi piccoli */
+            width: 90%;
             max-width: 300px;
             height: auto;
             border-radius: 15px;
@@ -52,7 +52,7 @@
 
         .buttons {
             display: flex;
-            flex-direction: column; /* Colonna per adattarsi allo schermo */
+            flex-direction: column;
             gap: 10px;
             margin: 20px 0;
         }
@@ -63,7 +63,7 @@
             border: none;
             border-radius: 10px;
             color: white;
-            width: 90%; /* Adattabile a schermi piccoli */
+            width: 90%;
             max-width: 300px;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
             cursor: pointer;
@@ -72,6 +72,12 @@
 
         .like-button { background-color: #4CAF50; }
         .dislike-button { background-color: #f44336; }
+        .instagram-button {
+            background-color: #E4405F;
+        }
+        .instagram-button:hover {
+            background-color: #c63754;
+        }
 
         .audio-overlay {
             position: absolute;
@@ -93,6 +99,12 @@
         Il tuo browser non supporta l'audio.
     </audio>
 
+    <!-- Effetti sonori -->
+    <audio id="instagram-sound">
+        <source src="instagram-sound.mp3" type="audio/mpeg">
+        <source src="instagram-sound.ogg" type="audio/ogg">
+    </audio>
+
     <!-- Immagine principale -->
     <img class="main-image" src="1.jpg" alt="Immagine principale">
 
@@ -105,10 +117,16 @@
     <div id="like-count" class="counter">Mi piace: 0</div>
     <div id="dislike-count" class="counter">Non mi piace: 0</div>
 
+    <!-- Immagine secondaria -->
+    <img class="secondary-image" src="2.jpg" alt="Immagine secondaria">
+
     <!-- Pulsanti -->
     <div class="buttons">
         <button class="button like-button" onclick="vote('like')">👍 Mi piace</button>
         <button class="button dislike-button" onclick="vote('dislike')">👎 Non mi piace</button>
+        <a class="button instagram-button" onclick="playInstagramSound()" href="https://www.instagram.com/direct/new/?username=mattibernaa" target="_blank">
+            Mandami a cagare
+        </a>
     </div>
 
     <!-- Overlay invisibile per abilitare audio -->
@@ -120,6 +138,7 @@
         const dislikeCountEl = document.getElementById('dislike-count');
         const subtitleEl = document.getElementById('subtitle');
         const backgroundAudio = document.getElementById('background-audio');
+        const instagramSound = document.getElementById('instagram-sound');
 
         // Recupera i dati dal localStorage
         let visitorCount = parseInt(localStorage.getItem('visitorCount')) || 0;
@@ -148,6 +167,11 @@
         function enableAudio() {
             backgroundAudio.play();
             document.querySelector('.audio-overlay').style.display = 'none'; // Rimuove l'overlay invisibile
+        }
+
+        // Effetto sonoro per "Mandami a cagare"
+        function playInstagramSound() {
+            instagramSound.play();
         }
 
         // Gestisce il voto
