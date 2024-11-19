@@ -121,54 +121,71 @@
     </div>
 
     <script>
-        // Namespace per FreeCounterAPI
-        const namespace = "ficcanaso";
-        const visitorUrl = `https://api.freecounterapi.com/${namespace}/visit`;
-        const likeUrl = `https://api.freecounterapi.com/${namespace}/like`;
-        const dislikeUrl = `https://api.freecounterapi.com/${namespace}/dislike`;
+        // URL del tuo JSONBin
+        const jsonBinUrl = "https://api.jsonbin.io/v3/b/YOUR_BIN_ID"; // Sostituisci con l'URL del tuo JSONBin
+        const apiKey = "YOUR_API_KEY"; // Sostituisci con la tua API Key JSONBin
 
-        // Elementi del DOM
-        const visitorCountEl = document.getElementById('visitor-count');
-        const likeCountEl = document.getElementById('like-count');
-        const dislikeCountEl = document.getElementById('dislike-count');
-
-        // Incrementa il contatore delle visualizzazioni
-        fetch(visitorUrl, { method: "POST" })
-            .then(response => response.json())
-            .then(data => {
-                visitorCountEl.innerText = `Numero di ficcanasi: ${data.value}`;
+        // Aggiorna e visualizza il contatore globale
+        function updateCounter(key) {
+            fetch(jsonBinUrl, {
+                method: "GET",
+                headers: {
+                    "X-Master-Key": apiKey,
+                },
             })
-            .catch(error => console.error('Errore nel contatore delle visualizzazioni:', error));
+                .then(response => response.json())
+                .then(data => {
+                    const currentValue = data.record[key];
+                    const newValue = currentValue + 1;
+
+                    // Aggiorna il valore nel bin
+                    const updatedData = { ...data.record, [key]: newValue };
+                    fetch(jsonBinUrl, {
+                        method: "PUT",
+                        headers: {
+                            "X-Master-Key": apiKey,
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(updatedData),
+                    });
+
+                    // Mostra il nuovo valore
+                    if (key === "visitCount") {
+                        document.getElementById("visitor-count").innerText = `Numero di ficcanasi: ${newValue}`;
+                    } else if (key === "likeCount") {
+                        document.getElementById("like-count").innerText = `Mi Piace: ${newValue}`;
+                        document.getElementById("like-count").classList.remove("hidden");
+                    } else if (key === "dislikeCount") {
+                        document.getElementById("dislike-count").innerText = `Non Mi Piace: ${newValue}`;
+                        document.getElementById("dislike-count").classList.remove("hidden");
+                    }
+                })
+                .catch(error => console.error("Errore:", error));
+        }
+
+        // Incrementa visualizzazioni all'apertura della pagina
+        updateCounter("visitCount");
 
         // Funzione per il voto
-        let hasVoted = localStorage.getItem('hasVoted') === 'true';
+        let hasVoted = localStorage.getItem("hasVoted") === "true";
         function vote(type) {
             if (hasVoted) {
                 alert("Hai già votato! Puoi scegliere solo una volta.");
                 return;
             }
 
-            const url = type === 'like' ? likeUrl : dislikeUrl;
-            const element = type === 'like' ? likeCountEl : dislikeCountEl;
-
-            fetch(url, { method: "POST" })
-                .then(response => response.json())
-                .then(data => {
-                    element.innerText = `${type === 'like' ? 'Mi Piace' : 'Non Mi Piace'}: ${data.value}`;
-                    element.classList.remove('hidden');
-                })
-                .catch(error => console.error('Errore nel contatore dei voti:', error));
-
-            localStorage.setItem('hasVoted', 'true');
+            updateCounter(type === "like" ? "likeCount" : "dislikeCount");
+            localStorage.setItem("hasVoted", "true");
             hasVoted = true;
         }
 
         // Abilita l'audio di sottofondo
         function enableAudio() {
-            const audio = document.getElementById('background-audio');
+            const audio = document.getElementById("background-audio");
             audio.play();
-            document.getElementById('audio-overlay').style.display = 'none';
+            document.getElementById("audio-overlay").style.display = "none";
         }
     </script>
 </body>
 </html>
+
