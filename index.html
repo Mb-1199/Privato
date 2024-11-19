@@ -79,6 +79,12 @@
 
         .like-button { background-color: #4CAF50; }
         .dislike-button { background-color: #f44336; }
+        .instagram-button {
+            background-color: #E4405F;
+        }
+        .instagram-button:hover {
+            background-color: #c63754;
+        }
     </style>
 </head>
 <body>
@@ -100,7 +106,7 @@
     <div class="message">Ti ho visto! 👀</div>
 
     <!-- Contatori -->
-    <div id="visitor-count" class="counter">Visualizzazioni: 0</div>
+    <div id="visitor-count" class="counter">Numero di ficcanasi fino ad ora: 0</div>
     <div id="like-count" class="counter hidden">Mi Piace: 0</div>
     <div id="dislike-count" class="counter hidden">Non Mi Piace: 0</div>
 
@@ -115,7 +121,7 @@
 
     <script>
         // Namespace e chiavi per CountAPI
-        const namespace = "ficcanaso"; 
+        const namespace = "ficcanaso";
         const visitKey = "visitCount";
         const likeKey = "likeCount";
         const dislikeKey = "dislikeCount";
@@ -132,7 +138,7 @@
         fetch(`https://api.countapi.xyz/hit/${namespace}/${visitKey}`)
             .then(response => response.json())
             .then(data => {
-                visitorCountEl.innerText = `Visualizzazioni: ${data.value}`;
+                visitorCountEl.innerText = `Numero di ficcanasi fino ad ora: ${data.value}`;
             })
             .catch(error => console.error('Errore nel contatore delle visualizzazioni:', error));
 
