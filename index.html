@@ -42,10 +42,21 @@
         }
 
         .message {
-            font-size: 1.5em;
+            font-size: 2em;
             font-weight: bold;
             color: #FFD700;
+            text-shadow: 2px 2px 10px rgba(255, 215, 0, 0.7);
             margin-top: 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .message img {
+            width: 40px;
+            height: 40px;
         }
 
         .main-image, .secondary-image {
@@ -125,7 +136,11 @@
     <div id="dislike-count" class="counter">Non mi piace: 0</div>
 
     <!-- Scritta Ti ho visto -->
-    <div class="message">Ti ho visto! 👀</div>
+    <div class="message">
+        <img src="https://cdn-icons-png.flaticon.com/512/709/709699.png" alt="Eye Icon">
+        Ti ho visto!
+        <img src="https://cdn-icons-png.flaticon.com/512/709/709699.png" alt="Eye Icon">
+    </div>
 
     <!-- Immagine secondaria -->
     <img class="secondary-image" src="2.jpg" alt="Immagine secondaria">
@@ -211,6 +226,4 @@
         };
     </script>
 </body>
-</html>
-
 </html>
