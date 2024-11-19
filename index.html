@@ -161,42 +161,25 @@
         const visitorCountEl = document.getElementById('visitor-count');
         const likeCountEl = document.getElementById('like-count');
         const dislikeCountEl = document.getElementById('dislike-count');
-        const subtitleEl = document.getElementById('subtitle');
         const backgroundAudio = document.getElementById('background-audio');
         const instagramSound = document.getElementById('instagram-sound');
 
-        // Utilizza CountAPI per gestire il contatore globale
-        const namespace = "ficcanaso";
+        // Utilizza CountAPI per il contatore globale
+        const namespace = "ficcanaso"; // Identificativo unico
         const visitKey = "visitCount";
+        const likeKey = "likeCount";
+        const dislikeKey = "dislikeCount";
 
-        // Incrementa il contatore globale e aggiorna la visualizzazione
+        // Incrementa il contatore globale delle visualizzazioni
         fetch(`https://api.countapi.xyz/hit/${namespace}/${visitKey}`)
             .then(res => res.json())
             .then(data => {
                 visitorCountEl.innerText = `Visualizzazioni: ${data.value}`;
             });
 
-        // Abilita l'audio di sottofondo
-        function enableAudio() {
-            backgroundAudio.play();
-            document.querySelector('.audio-overlay').style.display = 'none'; // Rimuove l'overlay invisibile
-        }
-
-        // Effetto sonoro per "Mandami a cagare"
-        function playInstagramSound() {
-            instagramSound.play();
-        }
-
-        // Gestisce il voto (locale)
-        let hasVoted = localStorage.getItem('hasVoted') === 'true';
-
+        // Mostra i voti e li incrementa globalmente
         function vote(type) {
-            if (hasVoted) {
-                alert("Hai già votato! Puoi scegliere solo una volta.");
-                return;
-            }
-
-            const key = type === 'like' ? 'likeCount' : 'dislikeCount';
+            const key = type === 'like' ? likeKey : dislikeKey;
             const element = type === 'like' ? likeCountEl : dislikeCountEl;
 
             fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
@@ -204,10 +187,19 @@
                 .then(data => {
                     element.innerText = `${type === 'like' ? 'Mi piace' : 'Non mi piace'}: ${data.value}`;
                 });
+        }
 
-            localStorage.setItem('hasVoted', 'true');
-            hasVoted = true;
+        // Abilita l'audio
+        function enableAudio() {
+            backgroundAudio.play();
+            document.querySelector('.audio-overlay').style.display = 'none';
+        }
+
+        // Effetto sonoro per Instagram
+        function playInstagramSound() {
+            instagramSound.play();
         }
     </script>
 </body>
 </html>
+
