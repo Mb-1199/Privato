@@ -165,28 +165,16 @@
         const backgroundAudio = document.getElementById('background-audio');
         const instagramSound = document.getElementById('instagram-sound');
 
-        // Recupera i dati dal localStorage
-        let visitorCount = parseInt(localStorage.getItem('visitorCount')) || 0;
-        let likeCount = parseInt(localStorage.getItem('likeCount')) || 0;
-        let dislikeCount = parseInt(localStorage.getItem('dislikeCount')) || 0;
-        let hasVoted = localStorage.getItem('hasVoted') === 'true';
+        // Utilizza CountAPI per gestire il contatore globale
+        const namespace = "ficcanaso";
+        const visitKey = "visitCount";
 
-        // Aggiorna i contatori
-        function updateCounters() {
-            visitorCountEl.innerText = `Visualizzazioni: ${visitorCount}`;
-            likeCountEl.innerText = `Mi piace: ${likeCount}`;
-            dislikeCountEl.innerText = `Non mi piace: ${dislikeCount}`;
-            subtitleEl.style.display = 'block';
-            visitorCountEl.style.display = 'block';
-            likeCountEl.style.display = 'block';
-            dislikeCountEl.style.display = 'block';
-        }
-
-        // Incrementa il contatore delle visualizzazioni
-        function incrementVisitorCount() {
-            visitorCount++;
-            localStorage.setItem('visitorCount', visitorCount);
-        }
+        // Incrementa il contatore globale e aggiorna la visualizzazione
+        fetch(`https://api.countapi.xyz/hit/${namespace}/${visitKey}`)
+            .then(res => res.json())
+            .then(data => {
+                visitorCountEl.innerText = `Visualizzazioni: ${data.value}`;
+            });
 
         // Abilita l'audio di sottofondo
         function enableAudio() {
@@ -199,31 +187,27 @@
             instagramSound.play();
         }
 
-        // Gestisce il voto
+        // Gestisce il voto (locale)
+        let hasVoted = localStorage.getItem('hasVoted') === 'true';
+
         function vote(type) {
             if (hasVoted) {
                 alert("Hai già votato! Puoi scegliere solo una volta.");
                 return;
             }
 
-            if (type === 'like') {
-                likeCount++;
-                localStorage.setItem('likeCount', likeCount);
-            } else if (type === 'dislike') {
-                dislikeCount++;
-                localStorage.setItem('dislikeCount', dislikeCount);
-            }
+            const key = type === 'like' ? 'likeCount' : 'dislikeCount';
+            const element = type === 'like' ? likeCountEl : dislikeCountEl;
+
+            fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
+                .then(res => res.json())
+                .then(data => {
+                    element.innerText = `${type === 'like' ? 'Mi piace' : 'Non mi piace'}: ${data.value}`;
+                });
 
             localStorage.setItem('hasVoted', 'true');
             hasVoted = true;
-            updateCounters();
         }
-
-        // Esegui all'apertura della pagina
-        window.onload = () => {
-            incrementVisitorCount();
-            updateCounters();
-        };
     </script>
 </body>
 </html>
