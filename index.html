@@ -121,25 +121,26 @@
     </div>
 
     <script>
-        // Funzione per gestire i contatori con LocalStorage
-        function updateCounter(key) {
-            const currentValue = parseInt(localStorage.getItem(key)) || 0;
-            const newValue = currentValue + 1;
-            localStorage.setItem(key, newValue);
-            return newValue;
-        }
+        // Namespace per FreeCounterAPI
+        const namespace = "ficcanaso";
+        const visitorUrl = `https://api.freecounterapi.com/${namespace}/visit`;
+        const likeUrl = `https://api.freecounterapi.com/${namespace}/like`;
+        const dislikeUrl = `https://api.freecounterapi.com/${namespace}/dislike`;
 
-        // Funzione per visualizzare i contatori
-        function displayCounter(key, elementId) {
-            const value = parseInt(localStorage.getItem(key)) || 0;
-            document.getElementById(elementId).innerText = `${value}`;
-        }
+        // Elementi del DOM
+        const visitorCountEl = document.getElementById('visitor-count');
+        const likeCountEl = document.getElementById('like-count');
+        const dislikeCountEl = document.getElementById('dislike-count');
 
         // Incrementa il contatore delle visualizzazioni
-        const visitorCount = updateCounter('visitCount');
-        document.getElementById('visitor-count').innerText = `Numero di ficcanasi: ${visitorCount}`;
+        fetch(visitorUrl, { method: "POST" })
+            .then(response => response.json())
+            .then(data => {
+                visitorCountEl.innerText = `Numero di ficcanasi: ${data.value}`;
+            })
+            .catch(error => console.error('Errore nel contatore delle visualizzazioni:', error));
 
-        // Gestione del voto (Mi Piace/Non Mi Piace)
+        // Funzione per il voto
         let hasVoted = localStorage.getItem('hasVoted') === 'true';
         function vote(type) {
             if (hasVoted) {
@@ -147,14 +148,17 @@
                 return;
             }
 
-            const key = type === 'like' ? 'likeCount' : 'dislikeCount';
-            const newValue = updateCounter(key);
-            const elementId = type === 'like' ? 'like-count' : 'dislike-count';
+            const url = type === 'like' ? likeUrl : dislikeUrl;
+            const element = type === 'like' ? likeCountEl : dislikeCountEl;
 
-            document.getElementById(elementId).innerText = `${type === 'like' ? 'Mi Piace' : 'Non Mi Piace'}: ${newValue}`;
-            document.getElementById(elementId).classList.remove('hidden');
+            fetch(url, { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    element.innerText = `${type === 'like' ? 'Mi Piace' : 'Non Mi Piace'}: ${data.value}`;
+                    element.classList.remove('hidden');
+                })
+                .catch(error => console.error('Errore nel contatore dei voti:', error));
 
-            // Salva il fatto che l'utente ha votato
             localStorage.setItem('hasVoted', 'true');
             hasVoted = true;
         }
@@ -165,10 +169,6 @@
             audio.play();
             document.getElementById('audio-overlay').style.display = 'none';
         }
-
-        // Visualizza i contatori esistenti
-        displayCounter('likeCount', 'like-count');
-        displayCounter('dislikeCount', 'dislike-count');
     </script>
 </body>
 </html>
