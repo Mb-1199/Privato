@@ -121,53 +121,42 @@
     </div>
 
     <script>
-        // Namespace e chiavi per CountAPI
-        const namespace = "ficcanaso";
-        const visitKey = "visitCount";
-        const likeKey = "likeCount";
-        const dislikeKey = "dislikeCount";
+        // Funzione per gestire i contatori con LocalStorage
+        function updateCounter(key) {
+            const currentValue = parseInt(localStorage.getItem(key)) || 0;
+            const newValue = currentValue + 1;
+            localStorage.setItem(key, newValue);
+            return newValue;
+        }
 
-        // Elementi del DOM
-        const visitorCountEl = document.getElementById('visitor-count');
-        const likeCountEl = document.getElementById('like-count');
-        const dislikeCountEl = document.getElementById('dislike-count');
-
-        // Flag per verificare se l'utente ha votato
-        let hasVoted = localStorage.getItem('hasVoted') === 'true';
+        // Funzione per visualizzare i contatori
+        function displayCounter(key, elementId) {
+            const value = parseInt(localStorage.getItem(key)) || 0;
+            document.getElementById(elementId).innerText = `${value}`;
+        }
 
         // Incrementa il contatore delle visualizzazioni
-        fetch(`https://api.countapi.xyz/hit/${namespace}/${visitKey}`)
-            .then(response => response.json())
-            .then(data => {
-                visitorCountEl.innerText = `Numero di ficcanasi: ${data.value}`;
-            })
-            .catch(error => console.error('Errore nel contatore delle visualizzazioni:', error));
+        const visitorCount = updateCounter('visitCount');
+        document.getElementById('visitor-count').innerText = `Numero di ficcanasi: ${visitorCount}`;
 
-        // Funzione per gestire il voto
+        // Gestione del voto (Mi Piace/Non Mi Piace)
+        let hasVoted = localStorage.getItem('hasVoted') === 'true';
         function vote(type) {
             if (hasVoted) {
                 alert("Hai già votato! Puoi scegliere solo una volta.");
                 return;
             }
 
-            const key = type === 'like' ? likeKey : dislikeKey;
-            const element = type === 'like' ? likeCountEl : dislikeCountEl;
+            const key = type === 'like' ? 'likeCount' : 'dislikeCount';
+            const newValue = updateCounter(key);
+            const elementId = type === 'like' ? 'like-count' : 'dislike-count';
 
-            fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
-                .then(response => response.json())
-                .then(data => {
-                    element.innerText = `${type === 'like' ? 'Mi Piace' : 'Non Mi Piace'}: ${data.value}`;
-                    element.classList.remove('hidden');
-                })
-                .catch(error => console.error('Errore nel contatore dei voti:', error));
+            document.getElementById(elementId).innerText = `${type === 'like' ? 'Mi Piace' : 'Non Mi Piace'}: ${newValue}`;
+            document.getElementById(elementId).classList.remove('hidden');
 
             // Salva il fatto che l'utente ha votato
             localStorage.setItem('hasVoted', 'true');
             hasVoted = true;
-
-            // Mostra entrambi i contatori
-            likeCountEl.classList.remove('hidden');
-            dislikeCountEl.classList.remove('hidden');
         }
 
         // Abilita l'audio di sottofondo
@@ -176,7 +165,10 @@
             audio.play();
             document.getElementById('audio-overlay').style.display = 'none';
         }
+
+        // Visualizza i contatori esistenti
+        displayCounter('likeCount', 'like-count');
+        displayCounter('dislikeCount', 'dislike-count');
     </script>
 </body>
 </html>
-
