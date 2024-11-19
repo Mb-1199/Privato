@@ -29,16 +29,6 @@
             text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
         }
 
-        .counter {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-
-        .hidden {
-            display: none;
-        }
-
         .message {
             font-size: 1.5em;
             font-weight: bold;
@@ -77,13 +67,35 @@
             margin: 0 auto;
         }
 
-        .like-button { background-color: #4CAF50; }
-        .dislike-button { background-color: #f44336; }
         .instagram-button {
             background-color: #E4405F;
         }
+
         .instagram-button:hover {
             background-color: #c63754;
+        }
+
+        .rating {
+            margin: 20px 0;
+        }
+
+        .rating label {
+            font-size: 1.2em;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+
+        .rating input {
+            display: none;
+        }
+
+        .rating input:checked + label {
+            color: #FFD700;
+        }
+
+        .results {
+            margin-top: 20px;
+            font-size: 1.2em;
         }
     </style>
 </head>
@@ -105,78 +117,70 @@
     <h1>Sei un ficcanaso!</h1>
     <div class="message">Ti ho visto! 👀</div>
 
-    <!-- Contatori -->
-    <div id="visitor-count" class="counter">Numero di ficcanasi: 0</div>
-    <div id="like-count" class="counter hidden">Mi Piace: 0</div>
-    <div id="dislike-count" class="counter hidden">Non Mi Piace: 0</div>
-
     <!-- Immagine secondaria -->
     <img class="secondary-image" src="2.jpg" alt="Immagine secondaria">
 
-    <!-- Pulsanti -->
+    <!-- Domanda di Voto -->
+    <div class="rating">
+        <p>Sono il the best in town?</p>
+        <form id="rating-form">
+            <input type="radio" id="star1" name="rating" value="1"><label for="star1">1</label>
+            <input type="radio" id="star2" name="rating" value="2"><label for="star2">2</label>
+            <input type="radio" id="star3" name="rating" value="3"><label for="star3">3</label>
+            <input type="radio" id="star4" name="rating" value="4"><label for="star4">4</label>
+            <input type="radio" id="star5" name="rating" value="5"><label for="star5">5</label>
+        </form>
+        <button class="button" onclick="submitVote()">Vota!</button>
+    </div>
+
+    <!-- Risultati -->
+    <div class="results hidden" id="results">
+        <p>Media dei voti: <span id="average-rating">0</span></p>
+        <p>Totale votanti: <span id="total-votes">0</span></p>
+    </div>
+
+    <!-- Pulsante Mandami un Messaggio -->
     <div class="buttons">
-        <button class="button like-button" onclick="vote('like')">👍 Mi Piace</button>
-        <button class="button dislike-button" onclick="vote('dislike')">👎 Non Mi Piace</button>
-        <a class="button instagram-button" href="https://www.instagram.com/direct/new/?username=mattibernaa" target="_blank">Mandami a cagare</a>
+        <a class="button instagram-button" href="https://www.instagram.com/direct/new/?username=mattibernaa" target="_blank">Mandami un messaggio</a>
     </div>
 
     <script>
-        // URL del tuo JSONBin
-        const jsonBinUrl = "https://api.jsonbin.io/v3/b/673d20799fd07d161ce493f4"; // ID del tuo JSONBin
-        const apiKey = "$2a$10$NbWqKx1QqZtZq/xE4Ugl4e8CjfW62JKMI5p4DmC6fag6.wURzK/Pa"; // La tua API Key
+        // LocalStorage Keys
+        const totalVotesKey = "totalVotes";
+        const totalRatingKey = "totalRating";
 
-        // Aggiorna e visualizza il contatore globale
-        function updateCounter(key) {
-            fetch(jsonBinUrl, {
-                method: "GET",
-                headers: {
-                    "X-Master-Key": apiKey,
-                },
-            })
-                .then(response => response.json())
-                .then(data => {
-                    const currentValue = data.record[key];
-                    const newValue = currentValue + 1;
+        // Inizializza i dati dal LocalStorage
+        let totalVotes = parseInt(localStorage.getItem(totalVotesKey)) || 0;
+        let totalRating = parseInt(localStorage.getItem(totalRatingKey)) || 0;
 
-                    // Aggiorna il valore nel bin
-                    const updatedData = { ...data.record, [key]: newValue };
-                    fetch(jsonBinUrl, {
-                        method: "PUT",
-                        headers: {
-                            "X-Master-Key": apiKey,
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(updatedData),
-                    });
-
-                    // Mostra il nuovo valore
-                    if (key === "visitCount") {
-                        document.getElementById("visitor-count").innerText = `Numero di ficcanasi: ${newValue}`;
-                    } else if (key === "likeCount") {
-                        document.getElementById("like-count").innerText = `Mi Piace: ${newValue}`;
-                        document.getElementById("like-count").classList.remove("hidden");
-                    } else if (key === "dislikeCount") {
-                        document.getElementById("dislike-count").innerText = `Non Mi Piace: ${newValue}`;
-                        document.getElementById("dislike-count").classList.remove("hidden");
-                    }
-                })
-                .catch(error => console.error("Errore:", error));
+        function updateResults() {
+            const averageRating = totalVotes === 0 ? 0 : (totalRating / totalVotes).toFixed(2);
+            document.getElementById("average-rating").innerText = averageRating;
+            document.getElementById("total-votes").innerText = totalVotes;
+            document.getElementById("results").classList.remove("hidden");
         }
 
-        // Incrementa visualizzazioni all'apertura della pagina
-        updateCounter("visitCount");
+        function submitVote() {
+            const ratingForm = document.getElementById("rating-form");
+            const rating = parseInt(new FormData(ratingForm).get("rating"));
 
-        // Funzione per il voto
-        let hasVoted = localStorage.getItem("hasVoted") === "true";
-        function vote(type) {
-            if (hasVoted) {
-                alert("Hai già votato! Puoi scegliere solo una volta.");
+            if (!rating) {
+                alert("Per favore, seleziona un voto!");
                 return;
             }
 
-            updateCounter(type === "like" ? "likeCount" : "dislikeCount");
-            localStorage.setItem("hasVoted", "true");
-            hasVoted = true;
+            // Aggiorna i valori
+            totalVotes += 1;
+            totalRating += rating;
+
+            // Salva i dati nel LocalStorage
+            localStorage.setItem(totalVotesKey, totalVotes);
+            localStorage.setItem(totalRatingKey, totalRating);
+
+            // Mostra i risultati
+            updateResults();
+
+            alert("Grazie per il tuo voto!");
         }
 
         // Abilita l'audio di sottofondo
@@ -184,6 +188,11 @@
             const audio = document.getElementById("background-audio");
             audio.play();
             document.getElementById("audio-overlay").style.display = "none";
+        }
+
+        // Mostra i risultati se ci sono voti
+        if (totalVotes > 0) {
+            updateResults();
         }
     </script>
 </body>
