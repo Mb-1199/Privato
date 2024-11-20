@@ -38,43 +38,6 @@
             position: relative;
         }
 
-        .main-image, .secondary-image {
-            width: 90%;
-            max-width: 300px;
-            height: auto;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
-            margin: 10px auto;
-        }
-
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .button {
-            font-size: 1.2em;
-            padding: 10px;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            width: 90%;
-            max-width: 300px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            margin: 0 auto;
-        }
-
-        .instagram-button {
-            background-color: #E4405F;
-        }
-
-        .instagram-button:hover {
-            background-color: #c63754;
-        }
-
         .rating {
             margin: 20px 0;
         }
@@ -97,28 +60,34 @@
             margin-top: 20px;
             font-size: 1.2em;
         }
+
+        .button {
+            font-size: 1.2em;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            width: 90%;
+            max-width: 300px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            margin: 10px auto;
+            background-color: #4CAF50;
+        }
+
+        .visit-button {
+            background-color: #007BFF;
+        }
+
+        .visit-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
-    <!-- Musica di sottofondo -->
-    <audio id="background-audio" loop>
-        <source src="audio-file.mp3" type="audio/mpeg">
-        <source src="audio-file.ogg" type="audio/ogg">
-        Il tuo browser non supporta l'audio.
-    </audio>
-
-    <!-- Overlay invisibile per abilitare l'audio -->
-    <div id="audio-overlay" onclick="enableAudio()" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; z-index: 10;"></div>
-
-    <!-- Immagine principale -->
-    <img class="main-image" src="1.jpg" alt="Immagine principale">
-
     <!-- Titolo -->
     <h1>Sei un ficcanaso!</h1>
     <div class="message">Ti ho visto! 👀</div>
-
-    <!-- Immagine secondaria -->
-    <img class="secondary-image" src="2.jpg" alt="Immagine secondaria">
 
     <!-- Domanda di Voto -->
     <div class="rating">
@@ -136,28 +105,32 @@
     <!-- Risultati -->
     <div class="results hidden" id="results">
         <p>Media dei voti: <span id="average-rating">0</span></p>
-        <p>Totale votanti: <span id="total-votes">0</span></p>
     </div>
 
-    <!-- Pulsante Mandami un Messaggio -->
-    <div class="buttons">
-        <a class="button instagram-button" href="https://www.instagram.com/direct/new/?username=mattibernaa" target="_blank">Mandami un messaggio</a>
+    <!-- Tasto Visualizzazioni -->
+    <div>
+        <button class="button visit-button" onclick="showVisits()">Totale visite</button>
+        <p id="visit-count" style="font-size: 1.2em; margin-top: 10px; display: none;"></p>
     </div>
 
     <script>
-        // LocalStorage Keys
-        const totalVotesKey = "totalVotes";
-        const totalRatingKey = "totalRating";
+        // URL MockAPI
+        const apiUrl = "https://673d24d84db5a341d83427f4.mockapi.io/globalVote";
 
-        // Inizializza i dati dal LocalStorage
-        let totalVotes = parseInt(localStorage.getItem(totalVotesKey)) || 0;
-        let totalRating = parseInt(localStorage.getItem(totalRatingKey)) || 0;
-
-        function updateResults() {
+        // Aggiorna e visualizza i risultati
+        function updateResults(totalVotes, totalRating) {
             const averageRating = totalVotes === 0 ? 0 : (totalRating / totalVotes).toFixed(2);
             document.getElementById("average-rating").innerText = averageRating;
-            document.getElementById("total-votes").innerText = totalVotes;
             document.getElementById("results").classList.remove("hidden");
+        }
+
+        function fetchResults() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    updateResults(data.totalVotes, data.totalRating);
+                })
+                .catch(error => console.error("Errore:", error));
         }
 
         function submitVote() {
@@ -169,31 +142,68 @@
                 return;
             }
 
-            // Aggiorna i valori
-            totalVotes += 1;
-            totalRating += rating;
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const updatedVotes = data.totalVotes + 1;
+                    const updatedRating = data.totalRating + rating;
 
-            // Salva i dati nel LocalStorage
-            localStorage.setItem(totalVotesKey, totalVotes);
-            localStorage.setItem(totalRatingKey, totalRating);
-
-            // Mostra i risultati
-            updateResults();
-
-            alert("Grazie per il tuo voto!");
+                    fetch(apiUrl, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            totalVotes: updatedVotes,
+                            totalRating: updatedRating,
+                            totalVisits: data.totalVisits, // Mantieni le visite intatte
+                        }),
+                    })
+                        .then(() => {
+                            updateResults(updatedVotes, updatedRating);
+                            alert("Grazie per il tuo voto!");
+                        });
+                })
+                .catch(error => console.error("Errore:", error));
         }
 
-        // Abilita l'audio di sottofondo
-        function enableAudio() {
-            const audio = document.getElementById("background-audio");
-            audio.play();
-            document.getElementById("audio-overlay").style.display = "none";
+        // Funzione per mostrare il totale delle visite
+        function showVisits() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const visitCountEl = document.getElementById("visit-count");
+                    visitCountEl.innerText = `Totale visite: ${data.totalVisits}`;
+                    visitCountEl.style.display = "block";
+                })
+                .catch(error => console.error("Errore:", error));
         }
 
-        // Mostra i risultati se ci sono voti
-        if (totalVotes > 0) {
-            updateResults();
+        // Inizializza le visite all'apertura
+        function initializeVisits() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const updatedVisits = data.totalVisits + 1;
+
+                    fetch(apiUrl, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            totalVotes: data.totalVotes, // Mantieni i voti intatti
+                            totalRating: data.totalRating,
+                            totalVisits: updatedVisits,
+                        }),
+                    });
+                })
+                .catch(error => console.error("Errore:", error));
         }
+
+        // Inizializza le visite e carica i risultati iniziali
+        initializeVisits();
+        fetchResults();
     </script>
 </body>
 </html>
