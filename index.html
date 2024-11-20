@@ -120,9 +120,6 @@
         Il tuo browser non supporta l'audio.
     </audio>
 
-    <!-- Overlay invisibile per abilitare l'audio -->
-    <div id="audio-overlay" onclick="enableAudio()" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
-
     <!-- Immagine principale -->
     <img class="main-image" src="1.jpg" alt="Immagine principale">
 
@@ -151,12 +148,14 @@
         function enableAudio() {
             if (!audioEnabled) {
                 const audio = document.getElementById("background-audio");
-                audio.play().catch(() => {
-                    console.log("Riproduzione automatica bloccata dal browser.");
+                audio.play().then(() => {
+                    audioEnabled = true;
+                    document.removeEventListener("mousemove", enableAudio);
+                    document.removeEventListener("click", enableAudio);
+                    document.removeEventListener("scroll", enableAudio);
+                }).catch(error => {
+                    console.log("Riproduzione bloccata. Interagisci per abilitare la musica.", error);
                 });
-                audioEnabled = true;
-                // Rimuovi l'overlay invisibile
-                document.getElementById("audio-overlay").style.display = "none";
             }
         }
 
@@ -165,6 +164,11 @@
             const popupMessage = document.getElementById("popup-message");
             popupMessage.style.display = "block";
         }
+
+        // Aggiunge ascoltatori per avviare la musica al primo movimento
+        document.addEventListener("mousemove", enableAudio);
+        document.addEventListener("click", enableAudio);
+        document.addEventListener("scroll", enableAudio);
     </script>
 </body>
 </html>
