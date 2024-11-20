@@ -33,15 +33,24 @@
             font-weight: bold;
             color: #FFD700;
             text-shadow: 2px 2px 10px rgba(255, 215, 0, 0.7);
-            margin-top: 20px;
+            margin: 10px 0;
         }
 
-        .main-image, .secondary-image {
+        .main-image {
             width: 90%;
             max-width: 300px;
             height: auto;
             border-radius: 15px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+            margin: 15px auto;
+        }
+
+        .secondary-image {
+            width: 80%;
+            max-width: 200px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
             margin: 10px auto;
         }
 
@@ -63,6 +72,56 @@
         .button:hover {
             background-color: #c63754;
         }
+
+        /* Bottone dinamico */
+        .tap-button {
+            font-size: 1.2em;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            background-color: #4CAF50;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+            margin: 20px auto;
+            display: inline-block;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Manina animata */
+        .hand {
+            font-size: 1.5em;
+            animation: tap 1s infinite ease-in-out;
+            margin-left: 10px;
+            display: inline-block;
+        }
+
+        @keyframes tap {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Messaggio animato */
+        .popup-message {
+            display: none;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FF0000;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -76,18 +135,28 @@
     <!-- Overlay invisibile per abilitare l'audio -->
     <div id="audio-overlay" onclick="enableAudio()" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; z-index: 10;"></div>
 
-    <!-- Titolo -->
-    <h1>Sei un ficcanaso!</h1>
-    <div class="message">Ti ho visto! 👀</div>
-
     <!-- Immagine principale -->
     <img class="main-image" src="1.jpg" alt="Immagine principale">
+
+    <!-- Titolo -->
+    <h1>Sei un ficcanaso!</h1>
+
+    <!-- Scritta -->
+    <div class="message">Ti ho visto! 👀</div>
 
     <!-- Immagine secondaria -->
     <img class="secondary-image" src="2.jpg" alt="Immagine secondaria">
 
+    <!-- Bottone dinamico -->
+    <button class="tap-button" onclick="showPopup()">Tap Here</button>
+    <span class="hand">👆</span>
+
+    <!-- Messaggio animato -->
+    <div class="popup-message" id="popup-message">Torna a fare il tuo, ficcanaso! Basta cazzeggiare!</div>
+
     <!-- Pulsante per Instagram -->
     <a class="button" href="https://www.instagram.com/direct/new/?username=mattibernaa" target="_blank">Mandami a cagare</a>
+    <span class="hand">👆</span>
 
     <script>
         // Abilita l'audio di sottofondo
@@ -95,6 +164,12 @@
             const audio = document.getElementById("background-audio");
             audio.play();
             document.getElementById("audio-overlay").style.display = "none";
+        }
+
+        // Mostra il messaggio popup
+        function showPopup() {
+            const popupMessage = document.getElementById("popup-message");
+            popupMessage.style.display = "block";
         }
     </script>
 </body>
