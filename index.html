@@ -67,7 +67,6 @@
             cursor: pointer;
             margin: 20px auto;
             text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
-            animation: pulse 2s infinite;
         }
 
         .button:hover {
@@ -88,12 +87,6 @@
 
         .red-button:hover {
             background-color: #E45B50;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
         }
 
         /* Scritta artistica */
@@ -119,9 +112,9 @@
         }
     </style>
 </head>
-<body>
+<body onclick="enableAudio()">
     <!-- Musica di sottofondo -->
-    <audio id="background-audio" loop>
+    <audio id="background-audio" autoplay loop>
         <source src="audio-file.mp3" type="audio/mpeg">
         <source src="audio-file.ogg" type="audio/ogg">
         Il tuo browser non supporta l'audio.
@@ -140,7 +133,7 @@
     <img class="secondary-image" src="2.jpg" alt="Immagine secondaria">
 
     <!-- Bottone -->
-    <button class="button" onclick="handleButtonClick()">Clicca qui</button>
+    <button class="button" onclick="showPopup()">Clicca qui</button>
 
     <!-- Messaggio animato -->
     <div class="popup-message" id="popup-message">Torna a fare il tuo, ficcanaso! Basta cazzeggiare!</div>
@@ -149,25 +142,29 @@
     <a class="red-button" href="https://www.instagram.com/direct/new/?username=mattibernaa" target="_blank">Mandami a cagare</a>
 
     <script>
-        // Variabile per tracciare i clic
-        let clickCount = 0;
+        let audioEnabled = false;
 
         // Abilita l'audio di sottofondo
         function enableAudio() {
-            const audio = document.getElementById("background-audio");
-            audio.play();
-        }
-
-        // Gestisce i clic sul pulsante "Clicca qui"
-        function handleButtonClick() {
-            clickCount++;
-            if (clickCount === 1) {
-                enableAudio();
-            } else if (clickCount === 2) {
-                const popupMessage = document.getElementById("popup-message");
-                popupMessage.style.display = "block";
+            if (!audioEnabled) {
+                const audio = document.getElementById("background-audio");
+                audio.play().catch(() => {
+                    console.log("Riproduzione automatica bloccata dal browser.");
+                });
+                audioEnabled = true;
             }
         }
+
+        // Mostra il messaggio popup
+        function showPopup() {
+            const popupMessage = document.getElementById("popup-message");
+            popupMessage.style.display = "block";
+        }
+
+        // Tentativo di riproduzione automatica all'apertura
+        window.onload = () => {
+            enableAudio();
+        };
     </script>
 </body>
 </html>
